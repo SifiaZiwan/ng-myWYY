@@ -1,6 +1,7 @@
 import { HomeService } from './../../services/home.service';
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Banner } from 'src/app/services/data-types/common.types';
+import { NzCarouselComponent } from 'ng-zorro-antd/carousel';
 
 @Component({
   selector: 'app-home',
@@ -8,16 +9,27 @@ import { Banner } from 'src/app/services/data-types/common.types';
   styleUrls: ['./home.component.less']
 })
 export class HomeComponent implements OnInit {
-  banners: Banner[] | undefined;
+  carouselActiveIndex = 0;
+  banners: Banner[] = [];
+
+  @ViewChild(NzCarouselComponent, { static: true })
+  private nzCarousel!: NzCarouselComponent;
+
   constructor(private homeService: HomeService) {
     this.homeService.getBanners().subscribe(banners => {
-      console.log("banners:", banners);
       this.banners = banners;
-
     })
   }
 
   ngOnInit(): void {
+  }
+
+  onBeforeChange({ to }: { to: number }) {  //可以在tsconfig.json 中"noImplicitAny": true,
+    this.carouselActiveIndex = to;
+  }
+
+  onChangeSlide(type: 'pre' | 'next') {
+    this.nzCarousel[type]();
   }
 
 }

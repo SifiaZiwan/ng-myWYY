@@ -1,3 +1,4 @@
+import { ServicesModule } from './../services/services.module';
 import { PagesModule } from './../pages/pages.module';
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,6 +19,7 @@ registerLocaleData(en, zh_CN, en_US);
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
+    ServicesModule,
     ShareModule,
     PagesModule,
     AppRoutingModule,

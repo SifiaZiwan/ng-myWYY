@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-wy-carousel',
@@ -6,11 +6,16 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
   styleUrls: ['./wy-carousel.component.less']
 })
 export class WyCarouselComponent implements OnInit {
-  @ViewChild('dot', { static: true }) dotRef: TemplateRef<any>;
+  @Input() activeIndex = 0;
+  @Output() changeSlide = new EventEmitter<'pre' | 'next'>();
+  @ViewChild('dot', { static: true }) dotRef: TemplateRef<any> | undefined;
 
   constructor() { }
 
   ngOnInit(): void {
   }
 
+  onChangeSlide(type: 'pre' | 'next') {
+    this.changeSlide.emit(type);
+  }
 }

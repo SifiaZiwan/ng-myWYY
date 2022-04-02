@@ -14,10 +14,6 @@ import { WyCarouselComponent } from './components/wy-carousel/wy-carousel.compon
   imports: [
     ShareModule,
     HomeRoutingModule
-  ],
-  exports: [
-    ShareModule,
-    HomeRoutingModule
   ]
 })
 export class HomeModule { }

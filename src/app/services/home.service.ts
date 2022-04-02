@@ -1,8 +1,8 @@
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { API_CONFIG, ServicesModule } from './services.module';
 import { Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { Observable, map } from 'rxjs';
+// import { map } from 'rxjs/operators'
 import { Banner } from './data-types/common.types';
 
 @Injectable({
@@ -13,7 +13,9 @@ export class HomeService {
   constructor(private http: HttpClient, @Inject(API_CONFIG) private uri: string) { }
 
   getBanners(): Observable<Banner[]> {
-    return this.http.get(this.uri + '/banner')
-      .pipe(map((res: { banners: Banner[] }) => res.banners));
+    let resp$ = this.http.get(this.uri + 'banner')
+      .pipe(map((res: any) => res.banners));
+    return resp$;
   }
+
 }
