@@ -1,8 +1,9 @@
-import { HotTag, SongSheet } from './../../services/data-types/common.types';
+import { HotTag, Singer, SongSheet } from './../../services/data-types/common.types';
 import { HomeService } from './../../services/home.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Banner } from 'src/app/services/data-types/common.types';
 import { NzCarouselComponent } from 'ng-zorro-antd/carousel';
+import { SingerService } from 'src/app/services/singer.services';
 
 @Component({
   selector: 'app-home',
@@ -14,14 +15,15 @@ export class HomeComponent implements OnInit {
   banners: Banner[] = [];
   hotTags: HotTag[] = [];
   songSheetList: SongSheet[] = [];
+  singers: Singer[] = [];
 
-  @ViewChild(NzCarouselComponent, { static: true })
-  private nzCarousel: NzCarouselComponent;
+  @ViewChild(NzCarouselComponent, { static: true }) private nzCarousel: NzCarouselComponent;
 
-  constructor(private homeService: HomeService) {
+  constructor(private homeService: HomeService, private singerService: SingerService) {
     this.getBanners();
     this.getHotTags();
     this.getPersonalizedSheetList();
+    this.getEnterSingers();
   }
 
   private getBanners() {
@@ -32,14 +34,21 @@ export class HomeComponent implements OnInit {
   private getHotTags() {
     this.homeService.getHotTags().subscribe(tags => {
       this.hotTags = tags;
-      console.log("tags:", this.hotTags);
+      // console.log("tags:", this.hotTags);
 
     })
   }
   private getPersonalizedSheetList() {
     this.homeService.getPersonalSheetList().subscribe(sheets => {
       this.songSheetList = sheets;
-      console.log("sheets:", this.songSheetList);
+      // console.log("sheets:", this.songSheetList);
+
+    })
+  }
+  private getEnterSingers() {
+    this.singerService.getEnterSinger().subscribe(singers => {
+      this.singers = singers;
+      console.log("sheets:", this.singers);
 
     })
   }
