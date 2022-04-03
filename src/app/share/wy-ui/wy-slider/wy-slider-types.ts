@@ -18,3 +18,5 @@ export type SliderEventObservaberConfig = {
   end$?: Observable<Event>;
 
 }
+
+export type SliderValue = number | null;
