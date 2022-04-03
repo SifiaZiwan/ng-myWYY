@@ -75,8 +75,8 @@ export class WySliderComponent implements OnInit {
   }
 
 
-  // findClosestValue(position: number) {
-  // }
+  private findClosestValue(position: number) {
+  }
 
   //订阅
   subScribeDrag(events: string[] = ['start', 'move', 'end']) {
