@@ -1,3 +1,4 @@
+import { WyPlayerModule } from './wy-player/wy-player.module';
 import { NgModule } from '@angular/core';
 import { SingleSheetComponent } from './single-sheet/single-sheet.component';
 import { PlayCountPipe } from '../pipes/play-count.pipe';
@@ -10,10 +11,12 @@ import { PlayCountPipe } from '../pipes/play-count.pipe';
     PlayCountPipe
   ],
   imports: [
+    WyPlayerModule,
   ],
   exports: [
     SingleSheetComponent,
-    PlayCountPipe
+    PlayCountPipe,
+    WyPlayerModule,
   ]
 })
 export class WyUiModule { }

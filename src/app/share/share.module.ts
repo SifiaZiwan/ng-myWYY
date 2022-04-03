@@ -22,7 +22,7 @@ import { NzCarouselModule } from 'ng-zorro-antd/carousel';
     NzMenuModule,
     NzInputModule,
     NzIconModule,
-    NzCarouselModule
+    NzCarouselModule,
   ],
   exports: [
     CommonModule,
