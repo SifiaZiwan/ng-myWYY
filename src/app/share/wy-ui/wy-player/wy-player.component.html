@@ -29,22 +29,26 @@
                 </div>
                 <div class="bar">
                     <div class="slider-wrap">
-                        <app-wy-slider [(ngModel)]="sliderValue"></app-wy-slider>
+                        <app-wy-slider [(ngModel)]="sliderValue" [bufferOffset]="bufferOffset"></app-wy-slider>
                     </div>
                     <span class="time"><em>02:11</em>/04:35</span>
                 </div>
             </div>
 
             <div class="oper">
-                <div class="like" title="收藏"></div>
-                <div class="like" title="分享"></div>
+                <i class="like" title="收藏"></i>
+                <i class="share" title="分享"></i>
             </div>
             <div class="ctrl">
-                <i class="like" title="音量"></i>
+                <i class="volume" title="音量"></i>
                 <i class="loop" title="循环"></i>
                 <p class="open">
                     <span></span>
                 </p>
+
+                <div class="control-vol">
+                    <app-wy-slider [wyVertical]="true"></app-wy-slider>
+                </div>
             </div>
         </div>
     </div>

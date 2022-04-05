@@ -23,6 +23,7 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
   @Input() wyVertical = false;
   @Input() wyMin = 0;
   @Input() wyMax = 100;
+  @Input() bufferOffset: SliderValue = 0;
   @ViewChild('wySlider', { static: true }) private wySlider: ElementRef;
 
   private sliderDom: HTMLDivElement;
