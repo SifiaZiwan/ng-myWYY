@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, Inject, Input, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { distinctUntilChanged, filter, map, pluck, takeUntil, tap, Observable, merge, fromEvent, Subscription } from 'rxjs';
 import { isArray } from 'src/app/until/array';
@@ -23,7 +23,8 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
   @Input() wyVertical = false;
   @Input() wyMin = 0;
   @Input() wyMax = 100;
-  @Input() bufferOffset: SliderValue = 0;
+  @Input() bufferPercent: SliderValue = 0;
+  @Input() wyOnAfterChange = new EventEmitter<SliderValue>();
   @ViewChild('wySlider', { static: true }) private wySlider: ElementRef;
 
   private sliderDom: HTMLDivElement;
@@ -111,7 +112,7 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
 
 
   //订阅 subscribe
-  subscribeDrag(events: string[] = ['start', 'move', 'end']) {
+  private subscribeDrag(events: string[] = ['start', 'move', 'end']) {
     if (isArray(events, 'start') && this.dragStart$ && !this.dragStart_) {
       this.dragStart_ = this.dragStart$.subscribe(this.onDragStart.bind(this));
     }
@@ -123,7 +124,7 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
     }
   }
   //unsunscribe
-  unsubscribeDrag(events: string[] = ['start', 'move', 'end']) {
+  private unsubscribeDrag(events: string[] = ['start', 'move', 'end']) {
     if (isArray(events, 'start') && this.dragStart_) {
       this.dragStart_.unsubscribe();
       this.dragStart_ = null;
@@ -152,6 +153,7 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
   }
 
   private onDragEnd() {
+    this.wyOnAfterChange.emit(this.value);
     this.toggleDragMoving(false);
     this.cdr.markForCheck();
   }

@@ -1,10 +1,12 @@
+import { DOCUMENT } from '@angular/common';
+import { SetCurrentIndex } from './../../../store/actions/player.actions';
 import { PlayMode } from './player-types';
 import { Song } from './../../../services/data-types/common.types';
 import { getSongList, getPlayList, getCurrentIndex, getCurrentSong, getPlayMode, getPlayer } from './../../../store/selectors/player.selector';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { AppStoreModule } from 'src/app/store';
-import { Observable } from 'rxjs';
+import { fromEvent, Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-wy-player',
@@ -12,15 +14,21 @@ import { Observable } from 'rxjs';
   styleUrls: ['./wy-player.component.less']
 })
 export class WyPlayerComponent implements OnInit {
-  sliderValue = 30;
-  bufferOffset = 70;
+  percent = 0;
+  bufferPercent = 0;
   songList: Song[];
   playList: Song[];
   currentIndex: number;
   currentSong: Song;
   playMode: PlayMode;
-
   duration: number;
+  playing = false; //播放状态
+  songReady = false; // 是否可以播放
+  volume = 60;
+  showVolumePanel = false;
+  selfClick = false; // 当前点击的部分是否为音量面板本身
+
+  private winClick: Subscription;
 
   @ViewChild('audio', { static: true }) private audio: ElementRef;
   private audioEl: HTMLAudioElement;
@@ -29,8 +37,11 @@ export class WyPlayerComponent implements OnInit {
   get picUrl(): string {
     return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
   }
+
+
   constructor(
-    private store$: Store<AppStoreModule>
+    private store$: Store<AppStoreModule>,
+    @Inject(DOCUMENT) private doc: Document,
   ) {
 
     const appStore$ = this.store$.pipe(select(getPlayer));
@@ -39,33 +50,6 @@ export class WyPlayerComponent implements OnInit {
     appStore$.pipe(select(getCurrentIndex)).subscribe(index => this.watchCurrentIndex(index));
     appStore$.pipe(select(getPlayMode)).subscribe(mode => this.watchPlayMode(mode));
     appStore$.pipe(select(getCurrentSong)).subscribe(song => this.watchCurrentSong(song));
-
-    // const stateArr = [
-    //   {
-    //     type: getSongList,
-    //     cb: list => this.watchList(list, "songList")
-    //   },
-    //   {
-    //     type: getPlayList,
-    //     cb: list => this.watchList(list, "playList")
-    //   },
-    //   {
-    //     type: getCurrentIndex,
-    //     cb: list => this.watchCurrentIndex(list)
-    //   },
-    //   {
-    //     type: getPlayMode,
-    //     cb: list => this.watchPlayMode(list)
-    //   },
-    //   {
-    //     type: getCurrentSong,
-    //     cb: list => this.watchCurrentSong(list)
-    //   }];
-
-    // stateArr.forEach(item => {
-    //   appStore$.pipe(select(item.type)).subscribe(item.cb)
-    // })
-
   }
 
   ngOnInit(): void {
@@ -96,15 +80,116 @@ export class WyPlayerComponent implements OnInit {
 
   }
 
+  onPercentChange(percent) {
+    if (this.currentSong) {
+      this.audioEl.currentTime = this.duration * (percent / 100);
+    }
+  }
+
+  onVolumeChange(percent) {
+    this.audioEl.volume = percent / 100;
+  }
+
+  toggleVolPanel(evt: MouseEvent) {
+    evt.stopPropagation();
+    this.togglePanel();
+  }
+
+  private togglePanel() {
+    this.showVolumePanel = !this.showVolumePanel;
+    if (this.showVolumePanel) {
+      this.bindDocumentClickListener();
+    } else {
+      this.unBindDocumentClickListener();
+    }
+  }
+
+  private bindDocumentClickListener() {
+    if (!this.winClick) {
+      this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
+        if (!this.selfClick) {//说明点击了播放器以外的部分
+          this.showVolumePanel = false;
+          this.unBindDocumentClickListener();
+        }
+        this.selfClick = false;
+      })
+    }
+  }
+
+  private unBindDocumentClickListener() {
+    if (this.winClick) {
+      this.winClick.unsubscribe();
+      this.winClick = null;
+    }
+  }
+
+  onToggle() {
+    if (!this.currentSong) {
+      if (this.playList.length) {
+        this.store$.dispatch(SetCurrentIndex({ currentIndex: 0 }));
+        this.songReady = false;
+      }
+    } else if (this.songReady) {
+      this.playing = !this.playing;
+      if (this.playing) {
+        this.audioEl.play();
+      } else {
+        this.audioEl.pause();
+      }
+    }
+  }
+
+
+  onPrev(index: number) {
+    if (!this.songReady) return;
+    if (this.playList.length === 1) {
+      this.loop();
+    } else {
+      const newIndex = index <= 0 ? this.playList.length - 1 : index;
+      this.updateIndex(newIndex);
+    }
+  }
+
+
+  onNext(index: number) {
+    if (!this.songReady) return;
+    if (this.playList.length === 1) {
+      this.loop();
+    } else {
+      const newIndex = index >= this.playList.length ? 0 : index;
+      this.updateIndex(newIndex);
+    }
+  }
+
+
   onCanPlay() {
+    this.songReady = true;
     this.play();
   }
 
   onTimeupdate(e: Event) {
     this.currentTime = (<HTMLAudioElement>e.target).currentTime;
+    this.percent = (this.currentTime / this.duration) * 100;
+    const buffered = this.audioEl.buffered;
+    // buffered.end(0); // 缓冲区域结束的时间点
+    if (buffered.length && this.bufferPercent < 100) {
+      this.bufferPercent = (buffered.end(0) / this.duration) * 100;
+    }
   }
+
+  private loop() {
+    this.audioEl.currentTime = 0;
+    this.play();
+  }
+
+  private updateIndex(index: number) {
+    this.store$.dispatch(SetCurrentIndex({ currentIndex: index }));
+    this.songReady = false;
+  }
+
   private play() {
     this.audioEl.play();
+    this.playing = true;
   }
 
 }
