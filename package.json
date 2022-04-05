@@ -18,6 +18,8 @@
     "@angular/platform-browser": "~13.2.0",
     "@angular/platform-browser-dynamic": "~13.2.0",
     "@angular/router": "~13.2.0",
+    "@ngrx/store": "^13.1.0",
+    "@ngrx/store-devtools": "^13.1.0",
     "minireset.css": "^0.0.7",
     "ng-zorro-antd": "^13.1.1",
     "qs": "^6.9.7",

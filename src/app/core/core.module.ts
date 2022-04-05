@@ -10,6 +10,7 @@ import { AppRoutingModule } from '../app-routing.module';
 import { ShareModule } from '../share/share.module';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 registerLocaleData(en, zh_CN, en_US);
 
@@ -22,6 +23,7 @@ registerLocaleData(en, zh_CN, en_US);
     ServicesModule,
     ShareModule,
     PagesModule,
+    StoreDevtoolsModule,
     AppRoutingModule,
   ],
   exports: [
