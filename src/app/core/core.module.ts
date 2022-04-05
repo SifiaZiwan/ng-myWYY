@@ -1,16 +1,18 @@
-import { ServicesModule } from './../services/services.module';
-import { PagesModule } from './../pages/pages.module';
+
+
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-import { en_US, NZ_I18N, zh_CN } from 'ng-zorro-antd/i18n';
-import { AppRoutingModule } from '../app-routing.module';
-import { ShareModule } from '../share/share.module';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { en_US, NZ_I18N, zh_CN } from 'ng-zorro-antd/i18n';
+
+import { ServicesModule } from './../services/services.module';
+import { PagesModule } from './../pages/pages.module';
+import { AppRoutingModule } from '../app-routing.module';
+import { ShareModule } from '../share/share.module';
+import { AppStoreModule } from '../store';
 
 registerLocaleData(en, zh_CN, en_US);
 
@@ -23,7 +25,7 @@ registerLocaleData(en, zh_CN, en_US);
     ServicesModule,
     ShareModule,
     PagesModule,
-    StoreDevtoolsModule,
+    AppStoreModule,
     AppRoutingModule,
   ],
   exports: [

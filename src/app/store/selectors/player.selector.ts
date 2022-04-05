@@ -1,9 +1,10 @@
 import { PlayMode } from './../../share/wy-ui/wy-player/player-types';
-import { createSelector } from '@ngrx/store';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { PlayState } from './../reducers/playder.reducer';
 
 const selectPlayerState = (state: PlayState) => state;
 
+export const getPlayer = createFeatureSelector<PlayState>('player');
 export const getPlaying = createSelector(selectPlayerState, (state: PlayState) => state.playing);
 export const getPlayList = createSelector(selectPlayerState, (state: PlayState) => state.playList);
 export const getSongList = createSelector(selectPlayerState, (state: PlayState) => state.songList);

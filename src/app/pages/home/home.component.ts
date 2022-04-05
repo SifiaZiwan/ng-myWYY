@@ -1,13 +1,14 @@
-import { SheetService } from './../../services/sheet.service';
-import { HomeRsolverService } from './home.resolver.services';
-import { HotTag, Singer, SongSheet } from './../../services/data-types/common.types';
-import { HomeService } from './../../services/home.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Banner } from 'src/app/services/data-types/common.types';
-import { NzCarouselComponent } from 'ng-zorro-antd/carousel';
-import { SingerService } from 'src/app/services/singer.services';
 import { ActivatedRoute } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
+import { NzCarouselComponent } from 'ng-zorro-antd/carousel';
+
+import { SetSongList, SetPlayList, SetCurrentIndex } from './../../store/actions/player.actions';
+import { AppStoreModule } from './../../store/index';
+import { SheetService } from './../../services/sheet.service';
+import { HotTag, Singer, SongSheet } from './../../services/data-types/common.types';
+import { Banner } from 'src/app/services/data-types/common.types';
 
 @Component({
   selector: 'app-home',
@@ -23,7 +24,10 @@ export class HomeComponent implements OnInit {
 
   @ViewChild(NzCarouselComponent, { static: true }) private nzCarousel: NzCarouselComponent;
 
-  constructor(private activeRoute: ActivatedRoute, private sheetService: SheetService) {
+  constructor(
+    private activeRoute: ActivatedRoute,
+    private sheetService: SheetService,
+    private store$: Store<AppStoreModule>) {
     this.activeRoute.data.pipe(map(res => res['homeDatas'])).subscribe(([banners, hotTags, songSheetList, singers]) => {
       this.banners = banners;
       this.hotTags = hotTags;
@@ -44,9 +48,10 @@ export class HomeComponent implements OnInit {
   }
 
   onPlaySheet(id: number) {
-    this.sheetService.playSheet(id).subscribe(res => {
-      console.log("song url:", res);
-
+    this.sheetService.playSheet(id).subscribe(list => {
+      this.store$.dispatch(SetSongList({ songList: list }));
+      this.store$.dispatch(SetPlayList({ playList: list }));
+      this.store$.dispatch(SetCurrentIndex({ currentIndex: 0 }));
     })
   }
 
