@@ -1,6 +1,5 @@
-import { PlayMode } from './../../share/wy-ui/wy-player/player-types';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { PlayState } from './../reducers/playder.reducer';
+import { PlayState } from '../reducers/player.reducer';
 
 const selectPlayerState = (state: PlayState) => state;
 

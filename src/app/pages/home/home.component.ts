@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { map } from 'rxjs';
 import { NzCarouselComponent } from 'ng-zorro-antd/carousel';
 
-import { SetSongList, SetPlayList, SetCurrentIndex } from './../../store/actions/player.actions';
+import { SetSongList, SetPlayList, SetCurrentIndex, SetPlayMode } from './../../store/actions/player.actions';
 import { AppStoreModule } from './../../store/index';
 import { SheetService } from './../../services/sheet.service';
 import { HotTag, Singer, SongSheet } from './../../services/data-types/common.types';

@@ -1,7 +1,7 @@
 import { Action, createReducer, on } from '@ngrx/store';
-import { SetPlaying, SetPlayList, SetSongList, SetPlayMode, SetCurrentIndex } from './../actions/player.actions';
-import { Song } from './../../services/data-types/common.types';
-import { PlayMode } from './../../share/wy-ui/wy-player/player-types';
+import { SetPlaying, SetPlayList, SetSongList, SetPlayMode, SetCurrentIndex } from '../actions/player.actions';
+import { Song } from '../../services/data-types/common.types';
+import { PlayMode } from '../../share/wy-ui/wy-player/player-types';
 
 export interface PlayState {
   playing: boolean; // play status

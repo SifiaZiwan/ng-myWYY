@@ -174,7 +174,7 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
 
   private getSliderStartPostion(): number {
     const offset = getElementOffset(this.sliderDom);
-    console.log("offset1:", offset);
+    // console.log("offset1:", offset);
 
     return this.wyVertical ? offset.top : offset.left;
   }
@@ -217,7 +217,7 @@ export class WySliderComponent implements OnInit, ControlValueAccessor, OnDestro
 
   private updateTrackAndHandles() {
     this.offset = this.getValueToOffset(this.value);
-    console.log("offset:", this.offset);
+    // console.log("offset:", this.offset);
 
     this.cdr.markForCheck();
   }

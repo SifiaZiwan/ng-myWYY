@@ -1,12 +1,28 @@
 import { DOCUMENT } from '@angular/common';
-import { SetCurrentIndex } from './../../../store/actions/player.actions';
+import { SetCurrentIndex, SetPlayList, SetPlayMode } from './../../../store/actions/player.actions';
 import { PlayMode } from './player-types';
 import { Song } from './../../../services/data-types/common.types';
 import { getSongList, getPlayList, getCurrentIndex, getCurrentSong, getPlayMode, getPlayer } from './../../../store/selectors/player.selector';
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { AppStoreModule } from 'src/app/store';
-import { fromEvent, Observable, Subscription } from 'rxjs';
+import { fromEvent, Subscription } from 'rxjs';
+import { shuffle } from 'src/app/until/array';
+
+const modeTypes: PlayMode[] = [
+  {
+    type: "loop",
+    label: "循环"
+  },
+  {
+    type: "random",
+    label: "随机"
+  },
+  {
+    type: "singleLoop",
+    label: "单曲循环"
+  },
+];
 
 @Component({
   selector: 'app-wy-player',
@@ -20,7 +36,6 @@ export class WyPlayerComponent implements OnInit {
   playList: Song[];
   currentIndex: number;
   currentSong: Song;
-  playMode: PlayMode;
   duration: number;
   playing = false; //播放状态
   songReady = false; // 是否可以播放
@@ -28,11 +43,14 @@ export class WyPlayerComponent implements OnInit {
   showVolumePanel = false;
   selfClick = false; // 当前点击的部分是否为音量面板本身
 
+  currentTime: number;
+  currentMode: PlayMode;
+  modeCount = 0;
+
   private winClick: Subscription;
 
   @ViewChild('audio', { static: true }) private audio: ElementRef;
   private audioEl: HTMLAudioElement;
-  currentTime: number;
 
   get picUrl(): string {
     return this.currentSong ? this.currentSong.al.picUrl : '//s4.music.126.net/style/web2/img/default/default_album.jpg';
@@ -47,8 +65,8 @@ export class WyPlayerComponent implements OnInit {
     const appStore$ = this.store$.pipe(select(getPlayer));
     appStore$.pipe(select(getSongList)).subscribe(list => this.watchList(list, 'songList'));
     appStore$.pipe(select(getPlayList)).subscribe(list => this.watchList(list, 'playList'));
-    appStore$.pipe(select(getCurrentIndex)).subscribe(index => this.watchCurrentIndex(index));
     appStore$.pipe(select(getPlayMode)).subscribe(mode => this.watchPlayMode(mode));
+    appStore$.pipe(select(getCurrentIndex)).subscribe(index => this.watchCurrentIndex(index));
     appStore$.pipe(select(getCurrentSong)).subscribe(song => this.watchCurrentSong(song));
   }
 
@@ -61,23 +79,39 @@ export class WyPlayerComponent implements OnInit {
     this[type] = list;
 
   }
+
   private watchCurrentIndex(index: number) {
     console.log('index:', index);
     this.currentIndex = index;
 
   }
+
   private watchPlayMode(mode: PlayMode) {
-    console.log('index:', mode);
-    this.playMode = mode;
+    console.log("mode:", mode);
+    this.currentMode = mode;
+    if (this.songList) {
+      let list = this.songList.slice();
+      if (mode.type === 'random') {
+        list = shuffle(this.songList);
+      }
+      this.updateCurrentIndex(list, this.currentSong);
+      this.store$.dispatch(SetPlayList({ playList: list }))
+    }
 
   }
+
   private watchCurrentSong(song: Song) {
-    console.log('index:', song);
+    // console.log('index:', song);
     if (song) {
       this.currentSong = song;
       this.duration = song.dt / 1000;
     }
 
+  }
+
+  private updateCurrentIndex(list: Song[], song: Song) {
+    const newIndex = list.findIndex(item => item.id === song.id);
+    this.store$.dispatch(SetCurrentIndex({ currentIndex: newIndex }));
   }
 
   onPercentChange(percent) {
@@ -94,6 +128,12 @@ export class WyPlayerComponent implements OnInit {
     evt.stopPropagation();
     this.togglePanel();
   }
+
+  changeMode() {
+    const newMode = modeTypes[++this.modeCount % 3];
+    this.store$.dispatch(SetPlayMode({ playMode: newMode }));
+  }
+
 
   private togglePanel() {
     this.showVolumePanel = !this.showVolumePanel;

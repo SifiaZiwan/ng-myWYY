@@ -19,8 +19,7 @@ import { FormatTimePipe } from '../../pipes/format-time.pipe';
   ],
   exports: [
     WyPlayerComponent,
-    WyPlayerComponent,
-
+    FormatTimePipe,
   ]
 })
 export class WyPlayerModule { }

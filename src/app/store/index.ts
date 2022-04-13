@@ -1,7 +1,7 @@
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreModule } from '@ngrx/store';
 import { NgModule } from '@angular/core';
-import { playerReducer } from './reducers/playder.reducer';
+import { playerReducer } from './reducers/player.reducer';
 import { environment } from 'src/environments/environment';
 
 
