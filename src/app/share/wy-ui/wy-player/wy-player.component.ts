@@ -41,6 +41,7 @@ export class WyPlayerComponent implements OnInit {
   songReady = false; // 是否可以播放
   volume = 60;
   showVolumePanel = false;
+  showListPanel = false;
   selfClick = false; // 当前点击的部分是否为音量面板本身
 
   currentTime: number;
@@ -124,9 +125,12 @@ export class WyPlayerComponent implements OnInit {
     this.audioEl.volume = percent / 100;
   }
 
-  toggleVolPanel(evt: MouseEvent) {
-    evt.stopPropagation();
-    this.togglePanel();
+  toggleVolPanel() {
+    this.togglePanel('showVolumePanel');
+  }
+
+  toggleListPanel() {
+    this.togglePanel('showListPanel');
   }
 
   changeMode() {
@@ -135,9 +139,9 @@ export class WyPlayerComponent implements OnInit {
   }
 
 
-  private togglePanel() {
-    this.showVolumePanel = !this.showVolumePanel;
-    if (this.showVolumePanel) {
+  private togglePanel(type: string) {
+    this[type] = !this[type];
+    if (this.showVolumePanel || this.showListPanel) {
       this.bindDocumentClickListener();
     } else {
       this.unBindDocumentClickListener();
@@ -149,6 +153,7 @@ export class WyPlayerComponent implements OnInit {
       this.winClick = fromEvent(this.doc, 'click').subscribe(() => {
         if (!this.selfClick) {//说明点击了播放器以外的部分
           this.showVolumePanel = false;
+          this.showListPanel = false;
           this.unBindDocumentClickListener();
         }
         this.selfClick = false;
@@ -230,6 +235,10 @@ export class WyPlayerComponent implements OnInit {
   private play() {
     this.audioEl.play();
     this.playing = true;
+  }
+
+  onChangeSong(song: Song) {
+    this.updateCurrentIndex(this.playList, song);
   }
 
 }
