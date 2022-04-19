@@ -7,7 +7,7 @@ import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core'
 import { select, Store } from '@ngrx/store';
 import { AppStoreModule } from 'src/app/store';
 import { fromEvent, Subscription } from 'rxjs';
-import { shuffle } from 'src/app/until/array';
+import { findIndex, shuffle } from 'src/app/until/array';
 
 const modeTypes: PlayMode[] = [
   {
@@ -111,7 +111,7 @@ export class WyPlayerComponent implements OnInit {
   }
 
   private updateCurrentIndex(list: Song[], song: Song) {
-    const newIndex = list.findIndex(item => item.id === song.id);
+    const newIndex = findIndex(list, song);
     this.store$.dispatch(SetCurrentIndex({ currentIndex: newIndex }));
   }
 

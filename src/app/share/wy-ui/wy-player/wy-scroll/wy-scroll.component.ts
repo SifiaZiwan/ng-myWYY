@@ -1,7 +1,9 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ViewChild, ElementRef, AfterViewInit, Input, OnChanges, SimpleChanges, Output, EventEmitter, Inject } from '@angular/core';
 import BScroll from '@better-scroll/core';
 import ScrollBar from '@better-scroll/scroll-bar';
 import MouseWheel from '@better-scroll/mouse-wheel'
+import { timer } from 'rxjs';
+import { WINDOW } from 'src/app/services/services.module';
 
 BScroll.use(ScrollBar);
 BScroll.use(MouseWheel);
@@ -22,10 +24,11 @@ BScroll.use(MouseWheel);
 export class WyScrollComponent implements OnInit, AfterViewInit, OnChanges {
   @Input() data: any[];
   @Input() refreshDelay = 50;
+  @Output() onScrollEnd = new EventEmitter<number>();
   private bs: BScroll;
 
   @ViewChild('wrap', { static: true }) private wrapRef: ElementRef;
-  constructor() { }
+  constructor(readonly el: ElementRef, @Inject(WINDOW) private win: Window) { }
   ngOnInit(): void {
   }
 
@@ -37,6 +40,7 @@ export class WyScrollComponent implements OnInit, AfterViewInit, OnChanges {
       },
       mouseWheel: {},
     });
+    this.bs.on('scrollEnd', ({ y }) => this.onScrollEnd.emit(y)); //滚动条的高度
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -45,14 +49,25 @@ export class WyScrollComponent implements OnInit, AfterViewInit, OnChanges {
     }
   }
 
+  scrollToElement(...args) {
+    this.bs.scrollToElement.apply(this.bs, args);
+  }
+
   private refresh() {
     this.bs.refresh();
   }
 
   refreshScroll() {
-    setTimeout(() => {
+    //方法一
+    // timer(this.refreshDelay).subscribe(() => {
+    //   this.refresh();
+    // })
+
+    //方法二, 浏览器使用setTimeout时
+    this.win.setTimeout(() => {
       this.refresh();
     }, this.refreshDelay);
+
   }
 
 }
