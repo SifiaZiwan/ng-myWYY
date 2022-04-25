@@ -42,3 +42,8 @@ export interface SongSheet {
   picUrl: string;
   track: Song[];
 }
+
+export interface Lyric {
+  lyric: string;
+  tlyric: string;
+}

@@ -1,5 +1,5 @@
-import { Song, SongUrl } from './data-types/common.types';
-import { map, Observable, of } from 'rxjs';
+import { Lyric, Song, SongUrl } from './data-types/common.types';
+import { map, Observable } from 'rxjs';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Inject, Injectable } from '@angular/core';
 import { API_CONFIG, ServicesModule } from './services.module';
@@ -33,5 +33,29 @@ export class SongService {
       }
     });
     return result;
+  }
+
+  getLyric(id: number): Observable<Lyric> {
+    const params = new HttpParams().set('id', id.toString());
+    let resp$ = this.http.get(this.uri + 'lyric', { params })
+      .pipe(map((res: { [key: string]: { lyric: string; } }) => {
+        // return {
+        //   lyric: res['lrc'].lyric,
+        //   tlyric: res['tlyric'].lyric,
+        // }
+
+        try {
+          return {
+            lyric: res['lrc'].lyric,
+            tlyric: res['tlyric'].lyric,
+          };
+        } catch (err) {
+          return {
+            lyric: '',
+            tlyric: '',
+          };
+        }
+      }));
+    return resp$;
   }
 }

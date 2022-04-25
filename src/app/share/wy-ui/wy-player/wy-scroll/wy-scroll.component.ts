@@ -59,14 +59,14 @@ export class WyScrollComponent implements OnInit, AfterViewInit, OnChanges {
 
   refreshScroll() {
     //方法一
-    // timer(this.refreshDelay).subscribe(() => {
-    //   this.refresh();
-    // })
+    timer(this.refreshDelay).subscribe(() => {
+      this.refresh();
+    })
 
     //方法二, 浏览器使用setTimeout时
-    this.win.setTimeout(() => {
-      this.refresh();
-    }, this.refreshDelay);
+    // this.win.setTimeout(() => {
+    //   this.refresh();
+    // }, this.refreshDelay);
 
   }
 
